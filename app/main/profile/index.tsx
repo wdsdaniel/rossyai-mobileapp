@@ -5,6 +5,7 @@ import AppText from "@/components/ui/AppText";
 import Header from "../Header";
 import { useEffect, useState } from "react";
 import { getUser } from "@/api/storage";
+import { TEXTS } from "@/constants/texts";
 
 // 👇 Ionicons name type
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -27,16 +28,27 @@ export default function ProfileScreen() {
     value: string | undefined;
     icon: IoniconName;
   }[] = [
-    { label: "First Name", value: profile.first_name, icon: "person-outline" },
-    { label: "Last Name", value: profile.last_name, icon: "person-outline" },
-    { label: "Email", value: profile.email, icon: "mail-outline" },
-    { label: "Phone", value: profile.contact_no, icon: "call-outline" },
+    {
+      label: TEXTS.Profile.firstName,
+      value: profile.first_name,
+      icon: "person-outline",
+    },
+    {
+      label: TEXTS.Profile.lastName,
+      value: profile.last_name,
+      icon: "person-outline",
+    },
+    { label: TEXTS.Auth.email, value: profile.email, icon: "mail-outline" },
+    {
+      label: TEXTS.Profile.phone,
+      value: profile.contact_no,
+      icon: "call-outline",
+    },
   ];
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <Header title="My Profile"
-      organizationList={[]} />
+      <Header title={TEXTS.Profile.myProfile} organizationList={[]} />
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         {/* Avatar */}
@@ -107,8 +119,10 @@ export default function ProfileScreen() {
             color={theme.colors.primary}
           />
           <View style={{ marginLeft: 12 }}>
-            <AppText weight="600">Security</AppText>
-            <AppText size={13}>Change password & settings</AppText>
+            <AppText weight="600">{TEXTS.Profile.security}</AppText>
+            <AppText size={13}>
+              {TEXTS.Profile.changePasswordAndSettings}
+            </AppText>
           </View>
         </View>
       </ScrollView>

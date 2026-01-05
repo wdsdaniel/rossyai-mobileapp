@@ -9,6 +9,7 @@ import { useTheme } from "../../../hooks/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { clearAuth, getUser } from "@/api/storage";
 import { router } from "expo-router";
+import { TEXTS } from "@/constants/texts";
 
 export default function CustomDrawer(props: any) {
   const { theme } = useTheme();
@@ -109,7 +110,7 @@ export default function CustomDrawer(props: any) {
         contentContainerStyle={{ paddingTop: 8 }}
       >
         <DrawerItem
-          label="Dashboard"
+          label={TEXTS.Drawer.dashboard}
           icon={({ color, size }) => (
             <Ionicons name="home-outline" size={20} color={color} />
           )}
@@ -122,49 +123,49 @@ export default function CustomDrawer(props: any) {
         />
 
         <DrawerItem
-          label="Call Logs"
+          label={TEXTS.Drawer.callLogs}
           onPress={() => {}}
           icon={() => <Ionicons name="call-outline" size={20} />}
         />
 
         <DrawerItem
-          label="Phone Numbers"
+          label={TEXTS.Drawer.phoneNumbers}
           onPress={() => {}}
           icon={() => <Ionicons name="calculator-outline" size={20} />}
         />
 
         <DrawerItem
-          label="Contacts"
+          label={TEXTS.Drawer.contact}
           onPress={() => {}}
           icon={() => <Ionicons name="people-outline" size={20} />}
         />
 
         <DrawerItem
-          label="Calendar"
+          label={TEXTS.Drawer.calendar}
           onPress={() => {}}
           icon={() => <Ionicons name="calendar-outline" size={20} />}
         />
 
         <DrawerItem
-          label="Leads"
+          label={TEXTS.Drawer.leads}
           onPress={() => {}}
           icon={() => <Ionicons name="bar-chart-outline" size={20} />}
         />
 
         <DrawerItem
-          label="Campaigns"
+          label={TEXTS.Drawer.campaigns}
           onPress={() => {}}
           icon={() => <Ionicons name="layers-outline" size={20} />}
         />
 
         <DrawerItem
           onPress={() => {}}
-          label="Agents"
+          label={TEXTS.Drawer.agents}
           icon={() => <Ionicons name="person-outline" size={20} />}
         />
 
         <DrawerItem
-          label="Billing"
+          label={TEXTS.Drawer.billing}
           onPress={() => {}}
           icon={() => <Ionicons name="card-outline" size={20} />}
         />
@@ -183,7 +184,7 @@ export default function CustomDrawer(props: any) {
           <Text
             style={{ marginLeft: 18, fontSize: 15, color: "#444", flex: 1 }}
           >
-            Support
+            {TEXTS.Drawer.support}
           </Text>
 
           <Ionicons
@@ -196,7 +197,7 @@ export default function CustomDrawer(props: any) {
           <>
             <DrawerItem
               style={{ marginLeft: 24 }}
-              label="My Support"
+              label={TEXTS.Drawer.mySupport}
               onPress={() => {}}
               icon={() => <Ionicons name="chatbubble-outline" size={18} />}
             />
@@ -204,7 +205,7 @@ export default function CustomDrawer(props: any) {
         )}
         <DrawerItem
           style={{ marginLeft: 0 }}
-          label="Profiles"
+          label={TEXTS.Drawer.profile}
           onPress={() => {
             props.navigation.closeDrawer();
             props.navigation.navigate("profile");
@@ -227,7 +228,7 @@ export default function CustomDrawer(props: any) {
           props.navigation.closeDrawer();
           console.log("Logout");
           clearAuth();
-          router.replace("/auth/Login");
+          router.replace("/auth/login");
         }}
       >
         <Ionicons name="power-outline" size={20} color="#fff" />
@@ -239,7 +240,7 @@ export default function CustomDrawer(props: any) {
             fontSize: 14,
           }}
         >
-          Logout
+          {TEXTS.Drawer.logOut}
         </Text>
       </TouchableOpacity>
     </View>

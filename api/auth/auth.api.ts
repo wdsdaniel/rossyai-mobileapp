@@ -1,17 +1,25 @@
 import { apiClient } from "../client";
-import { saveToken, saveUser, saveRole, saveUserId, getToken } from "../storage";
+import { LoginResponse } from "../types/login";
+import {
+  saveToken,
+  saveUser,
+  saveRole,
+  saveUserId,
+  saveLoginResponse,
+} from "../storage";
+import { TEXTS } from "@/constants/texts";
 
 export async function loginApi(payload: {
   email: string;
   password: string;
   portal: string;
   rememberMe: boolean;
-}) {
+}): Promise<LoginResponse> {
   try {
     const res = await apiClient.post("/api/login", payload);
     // if API responds but not 200
     if (res.status !== 200) {
-      throw new Error(res.data?.message || "Something went wrong");
+      throw new Error(res.data?.message || TEXTS.Auth.somethingWentWrong);
     }
 
     const token = res.data?.accessToken;
@@ -25,8 +33,9 @@ export async function loginApi(payload: {
     if (user) await saveUser(user);
     if (role) await saveRole(role);
     if (user) await saveUserId(user.id);
+    if(res.data) await saveLoginResponse(res.data);
 
-    return res.data;
+    return res.data as LoginResponse;
   } catch (e: any) {
     // backend sent structured error
     if (e.response) {
@@ -39,6 +48,6 @@ export async function loginApi(payload: {
     }
 
     // network / unexpected
-    throw new Error("Unable to connect. Please try again.");
+    throw new Error(TEXTS.Network.unableToConnect);
   }
 }

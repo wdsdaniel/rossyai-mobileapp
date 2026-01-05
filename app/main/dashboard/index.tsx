@@ -1,4 +1,10 @@
-import { View, ScrollView, Dimensions, TouchableOpacity } from "react-native";
+import {
+  View,
+  ScrollView,
+  Dimensions,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { useState, useEffect } from "react";
 import Header from "../Header";
 import { useTheme } from "@/hooks/ThemeContext";
@@ -9,6 +15,7 @@ import { LineChart } from "react-native-chart-kit";
 import { Organization } from "@/api/types/Organization";
 import { getOrganization } from "../../../api/organization/organizations.api";
 import { getUserId } from "@/api/storage";
+import { checkConnection } from "@/utils/network";
 const screenWidth = Dimensions.get("window").width;
 
 export default function DashboardHome() {
@@ -32,6 +39,18 @@ export default function DashboardHome() {
 
   useEffect(() => {
     async function load() {
+      const net = await checkConnection();
+
+      if (!net.isConnected) {
+        Alert.alert("No connection", "Please connect to Wi-Fi or mobile data.");
+        return;
+      }
+
+      if (!net.isInternetReachable) {
+        Alert.alert("No internet", "Please check your network connection.");
+        return;
+      }
+
       const userId = await getUserId();
       if (!userId) return;
 

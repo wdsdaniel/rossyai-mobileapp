@@ -1,5 +1,6 @@
 // src/api/storage.ts
 import * as SecureStore from "expo-secure-store";
+import { LoginResponse } from "./types/login";
 
 export async function saveToken(token: string) {
   await SecureStore.setItemAsync("accessToken", token);
@@ -41,6 +42,23 @@ export async function clearAuth() {
   await SecureStore.deleteItemAsync("accessToken");
   await SecureStore.deleteItemAsync("user");
   await SecureStore.deleteItemAsync("role");
+}
+
+export async function saveLoginResponse(loginResponse: LoginResponse) {
+  await SecureStore.setItemAsync("loginResponse", JSON.stringify(loginResponse));
+}
+
+export async function getLoginResponse(): Promise<LoginResponse | null> {
+  try {
+    const stored = await SecureStore.getItemAsync("loginResponse");
+
+    if (!stored) return null;
+
+    return JSON.parse(stored) as LoginResponse;
+  } catch (e) {
+    console.warn("Failed to read loginResponse:", e);
+    return null;
+  }
 }
 
 

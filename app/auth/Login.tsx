@@ -10,6 +10,7 @@ import { router } from "expo-router";
 import { isEmail, validatePassword } from "@/utils/validation";
 import { loginApi } from "../../api/auth/auth.api";
 import { checkConnection } from "@/utils/network";
+import { TEXTS } from "@/constants/texts";
 import * as Linking from "expo-linking";
 
 export default function Login() {
@@ -21,27 +22,33 @@ export default function Login() {
   const passwordRef = useRef<TextInput>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
+  // const [serverError, setServerError] = useState("");
 
   const handleLogin = async () => {
     const net = await checkConnection();
 
     if (!net.isConnected) {
-      Alert.alert("No connection", "Please connect to Wi-Fi or mobile data.");
+      Alert.alert(
+        TEXTS.Network.noInternetTitle,
+        TEXTS.Network.noInternetMessage
+      );
       return;
     }
 
     if (!net.isInternetReachable) {
-      Alert.alert("No internet", "Please check your network connection.");
+      Alert.alert(
+        TEXTS.Network.noInternetTitle,
+        TEXTS.Network.noInternetMessage
+      );
       return;
     }
 
     let valid = true;
     if (!email.trim()) {
-      setEmailError("Email is required");
+      setEmailError(TEXTS.Auth.emailRequiredPlaceHolder);
       valid = false;
     } else if (!isEmail(email)) {
-      setEmailError("Enter a valid email");
+      setEmailError(TEXTS.Auth.emailNotValidPlaceHolder);
       valid = false;
     }
 
@@ -59,20 +66,27 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const res = await loginApi({
+      const loginResponse = await loginApi({
         email,
         password,
         portal: "ADMIN",
         rememberMe: true,
       });
 
-      router.replace("/main/dashboard");
+      if (loginResponse != null) {
+        if (loginResponse.userData.email_verified) {
+          router.replace("/main/dashboard");
+        } else {
+          
+          router.replace("/auth/verification");
+        }
+      }
     } catch (e: any) {
       console.log("LOGIN ERROR:", e);
 
       Alert.alert(
-        "Login Failed",
-        e?.message || "Something went wrong. Please try again."
+        TEXTS.Auth.loginFailedTitle,
+        e?.message || TEXTS.Auth.somethingWentWrong
       );
     } finally {
       setLoading(false);
@@ -87,7 +101,7 @@ export default function Login() {
 
       <View style={{ marginTop: 20 }}>
         <AppInput
-          placeholder="Email"
+          placeholder={TEXTS.Auth.email}
           value={email}
           onChangeText={(val) => {
             setEmail(val);
@@ -105,7 +119,7 @@ export default function Login() {
 
         <AppInput
           ref={passwordRef}
-          placeholder="Password"
+          placeholder={TEXTS.Auth.password}
           secureTextEntry
           value={password}
           returnKeyType="done"
@@ -133,7 +147,7 @@ export default function Login() {
 
         <View style={{ marginTop: 16 }}>
           <AppButton
-            title="SIGN IN"
+            title={TEXTS.Auth.signIn}
             onPress={() => {
               handleLogin();
             }}
@@ -143,7 +157,7 @@ export default function Login() {
         <Divider />
 
         <AppButton
-          title="SIGN IN WITH GOOGLE"
+          title={TEXTS.Auth.signInWithGoogle}
           onPress={() => {}}
           variant="outline"
         />
@@ -197,13 +211,12 @@ export default function Login() {
               style={{ textAlign: "center", marginBottom: 32 }}
               color={theme.colors.textPrimary}
             >
-              You’ll be redirected to our website to complete your account
-              setup.
+              {TEXTS.Auth.createAccountInstruction}
             </AppText>
 
             {/* CREATE ACCOUNT ONLINE */}
             <AppButton
-              title="CREATE ACCOUNT ONLINE"
+              title={TEXTS.Auth.creatAccountOnline}
               onPress={() => {
                 Linking.openURL("https://www.google.com/");
                 setShowCreateModal(false);
@@ -214,7 +227,7 @@ export default function Login() {
 
             {/* BACK */}
             <AppButton
-              title="BACK"
+              title={TEXTS.Auth.back}
               variant="outline"
               onPress={() => setShowCreateModal(false)}
             />
