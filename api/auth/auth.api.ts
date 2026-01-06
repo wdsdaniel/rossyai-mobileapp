@@ -8,6 +8,7 @@ import {
   saveLoginResponse,
 } from "../storage";
 import { TEXTS } from "@/constants/texts";
+import { ForgotPasswordResponse } from "../types/forgot-password";
 
 export async function loginApi(payload: {
   email: string;
@@ -33,7 +34,7 @@ export async function loginApi(payload: {
     if (user) await saveUser(user);
     if (role) await saveRole(role);
     if (user) await saveUserId(user.id);
-    if(res.data) await saveLoginResponse(res.data);
+    if (res.data) await saveLoginResponse(res.data);
 
     return res.data as LoginResponse;
   } catch (e: any) {
@@ -50,4 +51,19 @@ export async function loginApi(payload: {
     // network / unexpected
     throw new Error(TEXTS.Network.unableToConnect);
   }
+}
+
+export async function forgotPassword(
+  email: string
+): Promise<ForgotPasswordResponse> {
+  const payload = {
+    data: {
+      email,
+    },
+  };
+  const res = await apiClient.post<ForgotPasswordResponse>(
+    "/api/users/forgot-password/",
+    payload
+  );
+  return res.data as ForgotPasswordResponse;
 }

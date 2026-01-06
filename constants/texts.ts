@@ -61,5 +61,12 @@ export const TEXTS = {
 
   App:{
     rossyAI: "ROSSY AI",
+  },
+
+  Dialog:{
+    cancel: "Cancel",
+    okay:"Okay",
+    confirm:"Confirm",
+    areYouSure: "Are you sure?",
   }
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Image, Alert } from "react-native";
+import { View, Image } from "react-native";
 import AppText from "../../components/ui/AppText";
 import AppInput from "../../components/ui/AppInput";
 import AppButton from "../../components/ui/AppButton";
@@ -8,6 +8,7 @@ import { TEXTS } from "@/constants/texts";
 import { getOTP, verifyOTP } from "../../api/verification/verification.api";
 import { getLoginResponse, getToken, saveLoginResponse } from "@/api/storage";
 import { router } from "expo-router";
+import CustomDialog from "@/components/modal/CustomDialog";
 
 export default function VerificationScreen() {
   const { theme } = useTheme();
@@ -16,6 +17,15 @@ export default function VerificationScreen() {
   const [timer, setTimer] = useState(5 * 60);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState("");
+  const [dialogMessage, setDialogMessage] = useState("");
+
+  const showDialog = (title: string, message: string) => {
+    setDialogTitle(title);
+    setDialogMessage(message);
+    setDialogVisible(true);
+  };
 
   useEffect(() => {
     if (timer === 0) return;
@@ -23,31 +33,31 @@ export default function VerificationScreen() {
     return () => clearInterval(interval);
   }, [timer]);
 
-  useEffect(() => {
-    const fetchOtp = async () => {
-      try {
-        const loginResponse = await getLoginResponse();
-        const email = loginResponse?.userData.email;
+  const fetchOtp = async () => {
+    try {
+      const loginResponse = await getLoginResponse();
+      const email = loginResponse?.userData?.email;
 
-        if (!email) {
-          Alert.alert(
-            TEXTS.Verification.verification,
-            TEXTS.Verification.emailBlank
-          );
-          return;
-        }
-
-        await getOTP({
-          email,
-          purpose: "signup",
-        });
-      } catch (e) {
-        console.log("Failed to get otp:", e);
+      if (!email) {
+        showDialog(
+          TEXTS.Verification.verification,
+          TEXTS.Verification.emailBlank
+        );
+        return;
       }
-    };
 
+      await getOTP({
+        email,
+        purpose: "signup",
+      });
+    } catch (e) {
+      console.log("Failed to get otp:", e);
+    }
+  };
+
+  useEffect(() => {
     fetchOtp();
-  }, []);
+  });
 
   const formatTime = () => {
     const m = Math.floor(timer / 60);
@@ -75,7 +85,7 @@ export default function VerificationScreen() {
       const token = await getToken();
 
       if (!token) {
-        Alert.alert(
+        showDialog(
           TEXTS.Verification.verification,
           TEXTS.Auth.somethingWentWrong
         );
@@ -93,7 +103,7 @@ export default function VerificationScreen() {
       // Adjust condition based on your API response
       if (res?.error) {
         setError(res.message);
-        Alert.alert(TEXTS.Verification.verification, res.message);
+        showDialog(TEXTS.Verification.verification, res.message);
         return;
       }
 
@@ -119,27 +129,33 @@ export default function VerificationScreen() {
       style={{
         flex: 1,
         alignItems: "center",
+        justifyContent: "center",
         paddingHorizontal: 24,
-        paddingTop: 70,
+        paddingBottom: 70,
         backgroundColor: theme.colors.background,
       }}
     >
+      <CustomDialog
+        visible={dialogVisible}
+        title={dialogTitle}
+        message={dialogMessage}
+        showCancel={false}
+        showConfirm={true}
+        confirmText={TEXTS.Dialog.okay}
+        onConfirm={() => setDialogVisible(false)}
+      />
       <Image
-        source={require("../../assets/images/AppIcon.png")}
-        style={{ width: 90, height: 90, marginBottom: 10 }}
+        source={require("../../assets/images/rossy_icon_with_text.png")}
+        style={{ width: 100, height: 100, marginBottom: 10 }}
         resizeMode="contain"
       />
 
-      <AppText size={20} weight="700" style={{ marginBottom: 40 }}>
-        {TEXTS.App.rossyAI}
-      </AppText>
-
-      <AppText size={20} weight="700" color={theme.colors.primary}>
+      <AppText size={30} weight="700" color={theme.colors.primary}>
         {TEXTS.Verification.verificationCode}
       </AppText>
 
       <AppText
-        size={14}
+        size={20}
         color={theme.colors.textMuted}
         style={{ textAlign: "center", marginTop: 8, marginBottom: 20 }}
       >
@@ -182,6 +198,16 @@ export default function VerificationScreen() {
           variant="primary"
         />
       </View>
+      {timer === 0 && (
+        <View style={{ width: "100%", marginTop: 12 }}>
+          <AppButton
+            title="Resend OTP"
+            onPress={() => fetchOtp()}
+            loading={false}
+            variant="primary"
+          />
+        </View>
+      )}
     </View>
   );
 }

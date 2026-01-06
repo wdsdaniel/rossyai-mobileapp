@@ -1,4 +1,4 @@
-import { Modal, View, TouchableOpacity, TextInput, Alert } from "react-native";
+import { Modal, View, TouchableOpacity, TextInput } from "react-native";
 import AuthLayout from "@/components/ui/AuthLayout";
 import AppText from "@/components/ui/AppText";
 import AppButton from "@/components/ui/AppButton";
@@ -11,6 +11,7 @@ import { isEmail, validatePassword } from "@/utils/validation";
 import { loginApi } from "../../api/auth/auth.api";
 import { checkConnection } from "@/utils/network";
 import { TEXTS } from "@/constants/texts";
+import  CustomDialog from "../../components/modal/CustomDialog"
 import * as Linking from "expo-linking";
 
 export default function Login() {
@@ -22,13 +23,23 @@ export default function Login() {
   const passwordRef = useRef<TextInput>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  // dialog state
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState("");
+  const [dialogMessage, setDialogMessage] = useState("");
   // const [serverError, setServerError] = useState("");
+
+  const showDialog = (title: string, message: string) => {
+    setDialogTitle(title);
+    setDialogMessage(message);
+    setDialogVisible(true);
+  };
 
   const handleLogin = async () => {
     const net = await checkConnection();
 
     if (!net.isConnected) {
-      Alert.alert(
+      showDialog(
         TEXTS.Network.noInternetTitle,
         TEXTS.Network.noInternetMessage
       );
@@ -36,7 +47,7 @@ export default function Login() {
     }
 
     if (!net.isInternetReachable) {
-      Alert.alert(
+      showDialog(
         TEXTS.Network.noInternetTitle,
         TEXTS.Network.noInternetMessage
       );
@@ -84,7 +95,7 @@ export default function Login() {
     } catch (e: any) {
       console.log("LOGIN ERROR:", e);
 
-      Alert.alert(
+      showDialog(
         TEXTS.Auth.loginFailedTitle,
         e?.message || TEXTS.Auth.somethingWentWrong
       );
@@ -95,6 +106,15 @@ export default function Login() {
 
   return (
     <AuthLayout>
+      <CustomDialog
+        visible={dialogVisible}
+        title={dialogTitle}
+        message={dialogMessage}
+        showCancel={false}
+        showConfirm={true}
+        confirmText={TEXTS.Dialog.okay}
+        onConfirm={() => setDialogVisible(false)}
+      />
       <AppText size={16} weight="600" style={{ textAlign: "center" }}>
         Please Sign In to your account
       </AppText>
