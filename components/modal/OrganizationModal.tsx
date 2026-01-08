@@ -4,13 +4,14 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  Text,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
-import { useTheme } from "../../hooks/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Organization } from "@/api/types/Organization";
-import AppInput from "../ui/AppInput";
+import { useTheme } from "../../hooks/ThemeContext";
+import SearchAppInput from "../ui/SearchAppInput";
+import NoOrganizationView from "@/components/ui/NoOrganizationView";
+import AppText from "@/components/ui/AppText";
 
 interface Props {
   visible: boolean;
@@ -65,6 +66,24 @@ export default function OrganizationModal({
     o.business_name.toLowerCase().includes(search.toLowerCase())
   );
 
+  /** Empty View (icon + text + create only) */
+  const renderEmpty = () => (
+    <NoOrganizationView
+      title={
+        organizations.length === 0
+          ? "No organizations found"
+          : "No matching organizations"
+      }
+      description={
+        organizations.length === 0
+          ? "Create an organization to continue"
+          : "Try searching with a different name"
+      }
+      onCreatePress={onCreate}
+      showCancel={false}   // 👈 IMPORTANT
+    />
+  );
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View
@@ -97,7 +116,7 @@ export default function OrganizationModal({
             }}
           >
             <Ionicons name="search-outline" size={18} color="#777" />
-            <AppInput
+            <SearchAppInput
               placeholder="Search organizations"
               value={search}
               onChangeText={setSearch}
@@ -108,6 +127,8 @@ export default function OrganizationModal({
           <FlatList
             data={filtered}
             keyExtractor={(item) => item.id}
+            ListEmptyComponent={renderEmpty}
+            contentContainerStyle={{ flexGrow: 1 }}
             renderItem={({ item }) => {
               const isSelected = item.id === selectedOrgId;
 
@@ -129,17 +150,15 @@ export default function OrganizationModal({
                     />
 
                     <View style={{ marginLeft: 10, flex: 1 }}>
-                      <Text
-                        style={{
-                          fontWeight: "600",
-                          color: isSelected ? "#5A4BFF" : "#000",
-                        }}
+                      <AppText
+                        weight="600"
+                        color={isSelected ? "#5A4BFF" : "#000"}
                       >
                         {item.business_name}
-                      </Text>
-                      <Text style={{ fontSize: 12, color: "#666" }}>
+                      </AppText>
+                      <AppText size={12} color="#666">
                         Minutes: {item.minutes}
-                      </Text>
+                      </AppText>
                     </View>
 
                     {isSelected && (
@@ -155,29 +174,18 @@ export default function OrganizationModal({
             }}
           />
 
-          {/* Footer */}
+          {/* ✅ ORIGINAL CANCEL BUTTON (UNCHANGED) */}
           <View style={{ marginTop: 10 }}>
-            <TouchableOpacity
-              onPress={onCreate}
-              style={{ flexDirection: "row", alignItems: "center", paddingVertical: 12 }}
-            >
-              <Ionicons name="add" size={20} color="#5A4BFF" />
-              <Text style={{ marginLeft: 6, color: "#5A4BFF", fontWeight: "600" }}>
-                Create Organization
-              </Text>
-            </TouchableOpacity>
-
             <TouchableOpacity
               onPress={onClose}
               style={{
-                marginTop: 6,
                 paddingVertical: 12,
                 borderRadius: 8,
                 alignItems: "center",
                 backgroundColor: "#f2f2f2",
               }}
             >
-              <Text style={{ fontWeight: "600" }}>Cancel</Text>
+              <AppText weight="600">Cancel</AppText>
             </TouchableOpacity>
           </View>
         </View>

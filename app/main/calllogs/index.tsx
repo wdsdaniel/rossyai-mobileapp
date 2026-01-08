@@ -7,14 +7,14 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { useTheme } from "../../../hooks/ThemeContext";
-import AppText from "../../../components/ui/AppText";
-import Header from "../../main/Header";
+import { useTheme } from "@/hooks/ThemeContext";
+import AppText from "@/components/ui/AppText";
+import Header from "../Header";
 import HeaderText from "@/components/ui/HeaderText";
 import { TEXTS } from "@/constants/texts";
-import { Organization } from "@/api/types/Organization";
-import { getOrganization } from "../../../api/organization/organizations.api";
 
+import { Organization } from "@/api/types/Organization";
+import { getOrganization } from "@/api/organization/organizations.api";
 import {
   getCallLogs,
   markCallLogItemFavorites,
@@ -22,8 +22,10 @@ import {
 import { CallLog } from "@/api/types/Calllogs";
 import { getUserId } from "@/api/storage";
 import { checkConnection } from "@/utils/network";
-import CustomDialog from "../../../components/modal/CustomDialog";
+
+import CustomDialog from "@/components/modal/CustomDialog";
 import CallLogShimmer from "@/components/shimmer/CallLogShimmer";
+import NoOrganizationView from "@/components/ui/NoOrganizationView";
 
 /* -------------------------------------------------------------------------- */
 /*                            DURATION FORMATTER                              */
@@ -31,19 +33,13 @@ import CallLogShimmer from "@/components/shimmer/CallLogShimmer";
 
 const formatDuration = (seconds?: number) => {
   if (!seconds || seconds <= 0) return "0s";
-
   const totalSeconds = Math.round(seconds);
   const mins = Math.floor(totalSeconds / 60);
   const secs = totalSeconds % 60;
-
   if (mins > 0 && secs > 0) return `${mins}m ${secs}s`;
   if (mins > 0) return `${mins}m`;
   return `${secs}s`;
 };
-
-/* -------------------------------------------------------------------------- */
-/*                                   SCREEN                                   */
-/* -------------------------------------------------------------------------- */
 
 export default function CallLogsScreen() {
   const { theme } = useTheme();
@@ -63,6 +59,8 @@ export default function CallLogsScreen() {
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogMessage, setDialogMessage] = useState("");
 
+  const hasSelectedOrganization = !!organization?.id;
+
   /* --------------------------- DIALOG --------------------------- */
 
   const showDialog = (title: string, message: string) => {
@@ -73,7 +71,7 @@ export default function CallLogsScreen() {
 
   /* --------------------------- INTERNET --------------------------- */
 
-  const ensureInternet = async (): Promise<boolean> => {
+  const ensureInternet = async () => {
     const net = await checkConnection();
     if (!net.isConnected || !net.isInternetReachable) {
       showDialog(
@@ -89,38 +87,28 @@ export default function CallLogsScreen() {
 
   useEffect(() => {
     async function loadOrganizations() {
-      const hasInternet = await ensureInternet();
-      if (!hasInternet) return;
+      const ok = await ensureInternet();
+      if (!ok) return;
 
       const userId = await getUserId();
       if (!userId) return;
 
       const orgs = await getOrganization(Number(userId));
       setOrganizationList(orgs);
-
-      if (orgs.length > 0) {
-        setOrganization(orgs[0]);
-      }
+      setOrganization(orgs.length > 0 ? orgs[0] : null);
+      setIsLoading(false);
     }
 
     loadOrganizations();
   }, []);
 
-  /* --------------------------- RESET PAGINATION --------------------------- */
-
-  const resetPagination = () => {
-    setCallLogs([]);
-    setPage(1);
-    setTotalPages(1);
-  };
-
   /* --------------------------- FETCH CALL LOGS --------------------------- */
 
   const fetchCallLogs = async (pageNumber = 1, orgId?: string) => {
-    if (isFetchingMore) return;
+    if (isFetchingMore || !orgId) return;
 
-    const hasInternet = await ensureInternet();
-    if (!hasInternet || !orgId) return;
+    const ok = await ensureInternet();
+    if (!ok) return;
 
     pageNumber === 1 ? setIsLoading(true) : setIsFetchingMore(true);
 
@@ -150,11 +138,12 @@ export default function CallLogsScreen() {
     }
   };
 
-  /* --------------------------- ORG CHANGE EFFECT --------------------------- */
+  /* --------------------------- ORG CHANGE --------------------------- */
 
   useEffect(() => {
     if (!organization?.id) return;
-    resetPagination();
+    setCallLogs([]);
+    setPage(1);
     fetchCallLogs(1, String(organization.id));
   }, [organization]);
 
@@ -175,11 +164,10 @@ export default function CallLogsScreen() {
   const handleToggleFavorite = async (item: CallLog) => {
     if (starringId || !organization?.id) return;
 
-    const hasInternet = await ensureInternet();
-    if (!hasInternet) return;
+    const ok = await ensureInternet();
+    if (!ok) return;
 
     const newValue = !item.starred;
-
     setCallLogs((prev) =>
       prev.map((log) =>
         log.id === item.id ? { ...log, starred: newValue } : log
@@ -194,7 +182,6 @@ export default function CallLogsScreen() {
         String(organization.id),
         item.id
       );
-
       if (!res.success) throw new Error();
     } catch {
       setCallLogs((prev) =>
@@ -212,12 +199,7 @@ export default function CallLogsScreen() {
 
   const EmptyList = () => (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Ionicons
-        name="call-outline"
-        size={44}
-        color={theme.colors.primary}
-        style={{ marginBottom: 12 }}
-      />
+      <Ionicons name="call-outline" size={44} color={theme.colors.primary} />
       <AppText size={14} weight="600" color={theme.colors.primary}>
         {TEXTS.CallLogs.noCallLogsAvailable}
       </AppText>
@@ -228,13 +210,13 @@ export default function CallLogsScreen() {
 
   const ShimmerList = () => (
     <>
-      {Array.from({ length: 6 }).map((_, index) => (
-        <CallLogShimmer key={index} />
+      {Array.from({ length: 6 }).map((_, i) => (
+        <CallLogShimmer key={i} />
       ))}
     </>
   );
 
-  /* --------------------------- RENDER ITEM --------------------------- */
+  /* --------------------------- RENDER ITEM (ORIGINAL CARD) --------------------------- */
 
   const renderItem = ({ item }: { item: CallLog }) => (
     <View
@@ -326,7 +308,7 @@ export default function CallLogsScreen() {
       <Header
         title={TEXTS.CallLogs.callLogs}
         organizationList={organizationList}
-        onSelectOrganization={(org) => setOrganization(org)}
+        onSelectOrganization={setOrganization}
       />
 
       <HeaderText
@@ -340,43 +322,28 @@ export default function CallLogsScreen() {
         {TEXTS.CallLogs.callLogs}
       </HeaderText>
 
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 14,
-          paddingVertical: 10,
-        }}
-      >
-        <View style={{ flex: 1 }} />
-        <Ionicons
-          name="options-outline"
-          size={16}
-          color={theme.colors.primary}
+      {!hasSelectedOrganization ? (
+        <NoOrganizationView />
+      ) : (
+        <FlatList
+          data={isLoading ? [] : callLogs}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListEmptyComponent={isLoading ? <ShimmerList /> : <EmptyList />}
+          ListFooterComponent={
+            isFetchingMore ? (
+              <ActivityIndicator
+                size="small"
+                color={theme.colors.primary}
+                style={{ marginVertical: 16 }}
+              />
+            ) : null
+          }
+          contentContainerStyle={{ padding: 14, flexGrow: 1 }}
         />
-        <AppText style={{ marginLeft: 6 }} weight="600" color={theme.colors.primary}>
-          Filters
-        </AppText>
-      </View>
-
-      <FlatList
-        data={isLoading ? [] : callLogs}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        ListEmptyComponent={isLoading ? <ShimmerList /> : <EmptyList />}
-        ListFooterComponent={
-          isFetchingMore ? (
-            <ActivityIndicator
-              size="small"
-              color={theme.colors.primary}
-              style={{ marginVertical: 16 }}
-            />
-          ) : null
-        }
-        contentContainerStyle={{ padding: 14, flexGrow: 1 }}
-      />
+      )}
 
       <CustomDialog
         visible={dialogVisible}

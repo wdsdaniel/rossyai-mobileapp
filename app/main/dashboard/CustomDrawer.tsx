@@ -231,7 +231,7 @@ export default function CustomDrawer(props: any) {
           props.navigation.closeDrawer();
           console.log("Logout");
           clearAuth();
-          router.replace("/auth/login");
+          router.replace("/auth/Login");
         }}
       >
         <Ionicons name="power-outline" size={20} color="#fff" />

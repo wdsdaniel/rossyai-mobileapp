@@ -7,6 +7,7 @@ export async function getOrganization(
 ): Promise<Organization[]> {
   const url = `/api/organizations/list?user_id=${user_id}`;
   const res = await apiClient.get<OrganizationResponse>(url);
+  console.log("Res Org => ", res.data)
   return res.data?.organizations ?? [];
 }
 
