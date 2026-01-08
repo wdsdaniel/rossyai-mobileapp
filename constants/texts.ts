@@ -33,15 +33,16 @@ export const TEXTS = {
   },
 
   Verification: {
-    verification:"Verification",
+    verification: "Verification",
     sixDigitCode: "6-Digit Code",
     verify: "VERIFY",
-    verificationInstruction:"Please enter the Verification Code\nsent to your registered email to\ncomplete the verification",
+    verificationInstruction:
+      "Please enter the Verification Code\nsent to your registered email to\ncomplete the verification",
     verificationCode: "Verification Code",
     timeRemaining: "Time remaining",
     pleaseEnterOTP: "Please enter the OTP.",
     mustBeSixDigit: "OTP must be 6 digits.",
-    emailBlank: "Email address cannot be blank"
+    emailBlank: "Email address cannot be blank",
   },
 
   Profile: {
@@ -59,14 +60,29 @@ export const TEXTS = {
     unableToConnect: "Unable to connect. Please try again.",
   },
 
-  App:{
+  App: {
     rossyAI: "ROSSY AI",
   },
 
-  Dialog:{
+  Dialog: {
     cancel: "Cancel",
-    okay:"Okay",
-    confirm:"Confirm",
+    okay: "Okay",
+    confirm: "Confirm",
     areYouSure: "Are you sure?",
-  }
+  },
+
+  CallLogs: {
+    searchCall: "Search Call",
+    filterFav: "Filter Favorites",
+    selectAgent: "Select Agent",
+    dateRange: "Date Range",
+    callId: "Call ID",
+    number: "Number",
+    duration: "Duration",
+    endedReason: "Ended Reason",
+    viewDetails: "View Details",
+    callLogs: "Call Logs",
+    organizationIdNull: "Organization id must not be null",
+    noCallLogsAvailable: "No call logs available",
+  },
 };

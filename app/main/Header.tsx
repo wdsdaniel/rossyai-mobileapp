@@ -63,7 +63,7 @@ export default function Header({
         <View style={{ flex: 1 }} />
 
         <Ionicons
-          name="time-outline"
+          name="business"
           size={22}
           color="#fff"
           onPress={() => {

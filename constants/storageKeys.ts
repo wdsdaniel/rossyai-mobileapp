@@ -1,0 +1,16 @@
+/**
+ * SecureStore / AsyncStorage keys
+ * Keep ALL persistent keys here
+ */
+
+export const STORAGE_KEYS = {
+  SELECTED_ORGANIZATION: "SELECTED_ORGANIZATION",
+  SELECTED_ORGANIZATION_ID: "SELECTED_ORGANIZATION_ID",
+
+  AUTH_TOKEN: "AUTH_TOKEN",
+  LOGIN_RESPONSE: "LOGIN_RESPONSE",
+
+  USER: "USER",
+  ROLE:"ROLE",
+  USER_ID: "USER_ID",
+} as const;

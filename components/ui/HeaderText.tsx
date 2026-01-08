@@ -9,17 +9,19 @@ type Props = {
   color?: string;
   style?: any;
   align?: "left" | "center" | "right";
-  bg?: string;
+  height?: number;
+  lineHeight?: number;   // only applied when provided
 };
 
-export default function AppText({
+export default function HeaderText({
   children,
-  size = 14,
-  weight = "400",
+  size = 24,
+  weight = "700",
   color,
   style,
-  align = "left",
-  bg,    // 👈 default height (used when not provided)
+  align = "center",
+  height = 40,            // default height (change if needed)
+  lineHeight,
 }: Props) {
   const { theme } = useTheme();
 
@@ -38,7 +40,8 @@ export default function AppText({
           fontFamily: fontMap[weight],
           color: color ?? theme.colors.textPrimary,
           textAlign: align,
-          backgroundColor: bg,
+          height,
+          ...(lineHeight && { lineHeight }),   // 👈 only when passed
         },
         style,
       ]}

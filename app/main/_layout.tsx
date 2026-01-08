@@ -3,6 +3,7 @@ import CustomDrawer from "./dashboard/CustomDrawer";
 import DashboardHome from "./dashboard";
 import ProfileScreen from "./profile";
 import { useWindowDimensions } from "react-native";
+import CallLogsScreen from "./calllogs";
 
 const Drawer = createDrawerNavigator();
 
@@ -27,6 +28,11 @@ export default function MainLayout() {
       <Drawer.Screen
         name="profile"
         component={ProfileScreen}
+      />
+
+      <Drawer.Screen
+        name="calllogs"
+        component={CallLogsScreen}
       />
     </Drawer.Navigator>
   );

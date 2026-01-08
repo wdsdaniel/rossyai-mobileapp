@@ -117,14 +117,17 @@ export default function CustomDrawer(props: any) {
           labelStyle={{ marginLeft: -8 }}
           onPress={() => {
             props.navigation.closeDrawer();
-            props.navigation.navigate("dashboard")
+            props.navigation.navigate("dashboard");
             // router.replace("/main/dashboard");
           }}
         />
 
         <DrawerItem
           label={TEXTS.Drawer.callLogs}
-          onPress={() => {}}
+          onPress={() => {
+            props.navigation.closeDrawer();
+            props.navigation.navigate("calllogs");
+          }}
           icon={() => <Ionicons name="call-outline" size={20} />}
         />
 

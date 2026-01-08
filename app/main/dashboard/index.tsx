@@ -1,10 +1,4 @@
-import {
-  View,
-  ScrollView,
-  Dimensions,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, ScrollView, Dimensions, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import Header from "../Header";
 import { useTheme } from "@/hooks/ThemeContext";
@@ -16,6 +10,9 @@ import { Organization } from "@/api/types/Organization";
 import { getOrganization } from "../../../api/organization/organizations.api";
 import { getUserId } from "@/api/storage";
 import { checkConnection } from "@/utils/network";
+import CustomDialog from "@/components/modal/CustomDialog";
+import { TEXTS } from "@/constants/texts";
+
 const screenWidth = Dimensions.get("window").width;
 
 export default function DashboardHome() {
@@ -30,24 +27,40 @@ export default function DashboardHome() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [step, setStep] = useState<"start" | "end">("start");
   const [organization, setOrganization] = useState<Organization | null>(null);
+  const [organizationList, setOrganizationList] = useState<Organization[]>([]);
+  // dialog state
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState("");
+  const [dialogMessage, setDialogMessage] = useState("");
+
+  const showDialog = (title: string, message: string) => {
+    setDialogTitle(title);
+    setDialogMessage(message);
+    setDialogVisible(true);
+  };
+
   const formattedRange =
     startDate && endDate
       ? `${startDate.toLocaleDateString()} — ${endDate.toLocaleDateString()}`
       : "Select date range";
-
-  const [organizationList, setOrganizationList] = useState<Organization[]>([]);
 
   useEffect(() => {
     async function load() {
       const net = await checkConnection();
 
       if (!net.isConnected) {
-        Alert.alert("No connection", "Please connect to Wi-Fi or mobile data.");
+        showDialog(
+          TEXTS.Network.noInternetTitle,
+          TEXTS.Network.noInternetMessage
+        );
         return;
       }
 
       if (!net.isInternetReachable) {
-        Alert.alert("No internet", "Please check your network connection.");
+        showDialog(
+          TEXTS.Network.noInternetTitle,
+          TEXTS.Network.noInternetMessage
+        );
         return;
       }
 
@@ -55,6 +68,7 @@ export default function DashboardHome() {
       if (!userId) return;
 
       const orgs = await getOrganization(Number(userId));
+      console.log("Organization size => ", orgs.length);
       setOrganizationList(orgs);
     }
 
@@ -73,6 +87,15 @@ export default function DashboardHome() {
   console.log("Organization in Content => ", organization);
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <CustomDialog
+        visible={dialogVisible}
+        title={dialogTitle}
+        message={dialogMessage}
+        showCancel={false}
+        showConfirm={true}
+        confirmText={TEXTS.Dialog.okay}
+        onConfirm={() => setDialogVisible(false)}
+      />
       <Header
         title="Dashboard"
         organizationList={organizationList}
