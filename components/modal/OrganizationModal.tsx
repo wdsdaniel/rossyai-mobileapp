@@ -80,7 +80,6 @@ export default function OrganizationModal({
           : "Try searching with a different name"
       }
       onCreatePress={onCreate}
-      showCancel={false}   // 👈 IMPORTANT
     />
   );
 
