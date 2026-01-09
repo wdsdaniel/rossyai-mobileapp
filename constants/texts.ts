@@ -62,6 +62,12 @@ export const TEXTS = {
 
   App: {
     rossyAI: "ROSSY AI",
+    noOrganizationFound:"No organizations found",
+    noMatchingOrganizationFound: "No matching organizations",
+    createOrganization:"Create an organization to continue",
+    trySearchingDifferentName:"Try searching with a different name",
+    searchOrganization:"Search organizations",
+
   },
 
   Dialog: {
@@ -74,6 +80,7 @@ export const TEXTS = {
   CallLogs: {
     searchCall: "Search Call",
     filterFav: "Filter Favorites",
+    filter: "Filters",
     selectAgent: "Select Agent",
     dateRange: "Date Range",
     callId: "Call ID",
@@ -84,5 +91,7 @@ export const TEXTS = {
     callLogs: "Call Logs",
     organizationIdNull: "Organization id must not be null",
     noCallLogsAvailable: "No call logs available",
+    startTime: "Start Time",
+    searchCallLogs: "Search Call Logs"
   },
 };

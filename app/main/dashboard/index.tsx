@@ -1,5 +1,5 @@
 import { View, ScrollView, Dimensions, TouchableOpacity } from "react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Header from "../Header";
 import { useTheme } from "@/hooks/ThemeContext";
 import { Picker } from "@react-native-picker/picker";
@@ -7,9 +7,6 @@ import AppText from "../../../components/ui/AppText";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { LineChart } from "react-native-chart-kit";
 import { Organization } from "@/api/types/Organization";
-import { getOrganization } from "../../../api/organization/organizations.api";
-import { getUserId } from "@/api/storage";
-import { checkConnection } from "@/utils/network";
 import CustomDialog from "@/components/modal/CustomDialog";
 import { TEXTS } from "@/constants/texts";
 
@@ -27,7 +24,6 @@ export default function DashboardHome() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [step, setStep] = useState<"start" | "end">("start");
   const [organization, setOrganization] = useState<Organization | null>(null);
-  const [organizationList, setOrganizationList] = useState<Organization[]>([]);
   // dialog state
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
@@ -38,42 +34,6 @@ export default function DashboardHome() {
     setDialogMessage(message);
     setDialogVisible(true);
   };
-
-  const formattedRange =
-    startDate && endDate
-      ? `${startDate.toLocaleDateString()} — ${endDate.toLocaleDateString()}`
-      : "Select date range";
-
-  useEffect(() => {
-    async function load() {
-      const net = await checkConnection();
-
-      if (!net.isConnected) {
-        showDialog(
-          TEXTS.Network.noInternetTitle,
-          TEXTS.Network.noInternetMessage
-        );
-        return;
-      }
-
-      if (!net.isInternetReachable) {
-        showDialog(
-          TEXTS.Network.noInternetTitle,
-          TEXTS.Network.noInternetMessage
-        );
-        return;
-      }
-
-      const userId = await getUserId();
-      if (!userId) return;
-
-      const orgs = await getOrganization(Number(userId));
-      console.log("Organization size => ", orgs.length);
-      setOrganizationList(orgs);
-    }
-
-    load();
-  }, []);
 
   const chartConfig = {
     backgroundGradientFrom: "#ffffff",
@@ -98,7 +58,7 @@ export default function DashboardHome() {
       />
       <Header
         title="Dashboard"
-        organizationList={organizationList}
+        organizationList={[]}
         onSelectOrganization={(org) => setOrganization(org)}
       />
 

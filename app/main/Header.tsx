@@ -19,7 +19,6 @@ export default function Header({
   onSelectOrganization?: (org: Organization) => void;
 }) {
   const nav = useNavigation();
-  const parent = nav.getParent();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const [organization, setOrganization] = useState<Organization>();
@@ -44,11 +43,6 @@ export default function Header({
         <TouchableOpacity
           onPress={() => {
             nav.dispatch(DrawerActions.openDrawer());
-            // if (parent) {
-            //   parent.dispatch(DrawerActions.openDrawer());
-            // } else {
-            //   console.log("No drawer found for this screen");
-            // }
           }}
         >
           <Ionicons name="menu" size={26} color="#fff" />
@@ -67,6 +61,7 @@ export default function Header({
           size={22}
           color="#fff"
           onPress={() => {
+            console.log(" onPress Org => ", organization?.business_name)
             setOpenOrgModal(true);
           }}
           style={{ marginRight: 14 }}
@@ -77,7 +72,6 @@ export default function Header({
       <>
         <OrganizationModal
           visible={openOrgModal}
-          organizations={organizationList}
           onClose={() => setOpenOrgModal(false)}
           onSelect={(org) => {
             setOpenOrgModal(false);

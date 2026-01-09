@@ -20,7 +20,7 @@ export async function getCallLogs(
       sort = "desc",
       sortColumn = "updatedAt",
     } = params;
-
+    console.log("Call API Params => ", JSON.stringify(params));
     const res = await apiClient.get<CallLogResponse>("/api/ai/voice/calls/", {
       params: {
         organization_id: organizationId,
