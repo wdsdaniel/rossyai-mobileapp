@@ -69,6 +69,7 @@ export default function CallLogsScreen() {
   const [dialogMessage, setDialogMessage] = useState("");
 
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const isPaginatingRef = useRef(false);
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -183,6 +184,7 @@ export default function CallLogsScreen() {
       } finally {
         setIsLoading(false);
         setIsFetchingMore(false);
+        setIsRefreshing(false);
         isPaginatingRef.current = false;
       }
     },
@@ -197,6 +199,17 @@ export default function CallLogsScreen() {
     setPage(1);
     fetchCallLogs(1, String(organization.id));
   }, [organization?.id, fetchCallLogs]);
+
+  /* --------------------------- PULL TO REFRESH --------------------------- */
+  const handleRefresh = useCallback(() => {
+    setIsRefreshing(true);
+
+    // reset pagination only
+    setPage(1);
+    setCallLogs([]);
+
+    fetchCallLogs(1);
+  }, [fetchCallLogs]);
 
   /* --------------------------- SEARCH (SAFE) --------------------------- */
 
@@ -504,6 +517,8 @@ export default function CallLogsScreen() {
           keyExtractor={(item) => item.id}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
+          refreshing={isRefreshing}
+          onRefresh={handleRefresh}
           ListEmptyComponent={isLoading ? <CallLogShimmer /> : <EmptyList />}
           ListFooterComponent={
             isFetchingMore ? (
