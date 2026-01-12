@@ -110,7 +110,7 @@ export default function CustomDrawer(props: any) {
         contentContainerStyle={{ paddingTop: 8 }}
       >
         <DrawerItem
-          label={TEXTS.Drawer.dashboard}
+          label={ TEXTS.Drawer.dashboard}
           icon={({ color, size }) => (
             <Ionicons name="home-outline" size={20} color={color} />
           )}

@@ -11,9 +11,16 @@
     "newArchEnabled": true,
     "ios": {
       "jsEngine": "jsc",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryAddUsageDescription": "Allow Rossy to save call recordings",
+        "NSPhotoLibraryUsageDescription": "Allow Rossy to access call recordings"
+      }
     },
     "android": {
+      "permissions": [
+        "READ_MEDIA_AUDIO"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/images/app_icon.png"

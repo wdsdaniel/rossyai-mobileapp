@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as SecureStore from "expo-secure-store";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { useTheme } from "@/hooks/ThemeContext";
 import AppText from "@/components/ui/AppText";
@@ -28,6 +28,8 @@ import { checkConnection } from "@/utils/network";
 import CustomDialog from "@/components/modal/CustomDialog";
 import CallLogShimmer from "@/components/shimmer/CallLogShimmer";
 import NoOrganizationView from "@/components/ui/NoOrganizationView";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { CallLogsStackParamList } from "./CallLogsStack";
 
 /* -------------------------------------------------------------------------- */
 /*                            DURATION FORMATTER                              */
@@ -43,7 +45,7 @@ const formatDuration = (seconds?: number) => {
   return `${secs}s`;
 };
 
-const MIN_SEARCH_LENGTH = 2;
+const MIN_SEARCH_LENGTH = 3;
 const SEARCH_DEBOUNCE_DELAY = 500;
 
 export default function CallLogsScreen() {
@@ -70,6 +72,18 @@ export default function CallLogsScreen() {
 
   const isPaginatingRef = useRef(false);
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  type NavigationProp = NativeStackNavigationProp<
+    CallLogsStackParamList,
+    "CallLogsList"
+  >;
+  const navigation = useNavigation<NavigationProp>();
+
+  const handleViewDetails = (item: CallLog) => {
+    navigation.navigate("CallDetails", {
+      callLog: item,
+    });
+  };
 
   const hasSelectedOrganization = !!organization?.id;
 
@@ -206,7 +220,7 @@ export default function CallLogsScreen() {
         clearTimeout(searchDebounceRef.current);
       }
     };
-  }, [searchQuery]);
+  }, [searchQuery, organization?.id, fetchCallLogs]);
 
   /* --------------------------- CLEAR SEARCH --------------------------- */
 
@@ -338,6 +352,34 @@ export default function CallLogsScreen() {
           </AppText>
           {item.endedReason}
         </AppText>
+      </View>
+      <View
+        style={{
+          borderTopWidth: 1,
+          borderTopColor: "#E9E9E9",
+          backgroundColor: "#F8F9FC",
+          paddingHorizontal: 14,
+          paddingVertical: 10,
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <AppText size={11}>
+          {TEXTS.CallLogs.startTime}:{" "}
+          {new Date(item.startedAt).toLocaleString()}
+        </AppText>
+
+        <View style={{ flex: 1 }} />
+
+        <TouchableOpacity
+          onPress={() => {
+            handleViewDetails(item);
+          }}
+        >
+          <AppText size={12} weight="600" color={theme.colors.primary}>
+            {TEXTS.CallLogs.viewDetails}
+          </AppText>
+        </TouchableOpacity>
       </View>
     </View>
   );

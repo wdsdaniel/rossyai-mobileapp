@@ -66,8 +66,6 @@ export default function Header({
           }}
           style={{ marginRight: 14 }}
         />
-
-        <Ionicons name="person-outline" size={22} color="#fff" />
       </View>
       <>
         <OrganizationModal

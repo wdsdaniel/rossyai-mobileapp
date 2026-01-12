@@ -7,7 +7,6 @@ import {
   StyleSheet,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import AppText from "@/components/ui/AppText";
 import { useTheme } from "@/hooks/ThemeContext";
 
 type Props = {
@@ -34,7 +33,7 @@ export default function MaterialSearchInput({
       duration: 180,
       useNativeDriver: false,
     }).start();
-  }, [focused, value]);
+  }, [animatedLabel, focused, value]);
 
   const labelStyle = {
     position: "absolute" as const,

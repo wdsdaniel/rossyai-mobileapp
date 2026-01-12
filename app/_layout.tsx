@@ -1,6 +1,7 @@
-import { Slot, usePathname } from "expo-router";
+import { Slot } from "expo-router";
 import { ThemeProvider } from "../hooks/ThemeContext";
-import { Drawer } from "expo-router/drawer";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import {
   useFonts,
@@ -10,10 +11,7 @@ import {
   PublicSans_700Bold,
 } from "@expo-google-fonts/public-sans";
 
-import CustomDrawer from "./main/dashboard/CustomDrawer";
-
 export default function RootLayout() {
-  const pathname = usePathname();
 
   const [fontsLoaded] = useFonts({
     PublicSans_400Regular,
@@ -27,9 +25,13 @@ export default function RootLayout() {
   // no header / drawer for auth screens
   // const hideShell = pathname.startsWith("/auth");
 
-  return (
-    <ThemeProvider>
-      <Slot />
-    </ThemeProvider>
+    return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider>
+        <BottomSheetModalProvider>
+          <Slot />
+        </BottomSheetModalProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

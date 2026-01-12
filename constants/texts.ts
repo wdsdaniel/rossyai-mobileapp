@@ -17,7 +17,7 @@ export const TEXTS = {
   },
 
   Drawer: {
-    dashboard: "Dashboard",
+    dashboard: "  Dashboard",
     callLogs: "Call Logs",
     phoneNumbers: "Phone Numbers",
     contact: "Contacts",
@@ -92,6 +92,25 @@ export const TEXTS = {
     organizationIdNull: "Organization id must not be null",
     noCallLogsAvailable: "No call logs available",
     startTime: "Start Time",
-    searchCallLogs: "Search Call Logs"
+    searchCallLogs: "Search Call Logs",
+    callDetails:"Call Details",
+    phoneNumber: "Phone Number",
+    startedAt: "Started At",
+    endedAt: "Ended At",
+    recording: "Recording",
+    notAvailable: "Not available",
+    summary:"Summary",
+    transcript: "Transcript",
+    noSummaryAvailable: "No summary available",
+    noTranscriptAvailable: "No transcript available",
+    recodringNotAvailable:"Recording not available",
+    notAbleToPlay: "Unable to play recording",
+    permissionRequired:"Permission Required",
+    rossyNeedAccessToStorage: "Rossy needs access to your device storage to save call recordings in the Rossy folder.",
+    donwloadComplete:"Download complete",
+    savedToRossyFolder:"The call recording saved to rossy folder",
+    downloadFailed: "Download failed",
+    unableToDownloadRecording: "Unable to download recording",
+    savedToDevice: "Recoding successfully saved"
   },
 };
